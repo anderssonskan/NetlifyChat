@@ -4,13 +4,15 @@ import React from 'react';
 import Chat from './Chat';
 import Login from './Login';
 import Register from './Register';
+import Start from './Start';
 
 function App() {
 
   return (
     <Router>
       <Routes>
-        <Route path='/' element={<Register />} />
+
+        <Route path='/' element={<Start />} />
         <Route path='/register' element={<Register />} />
         <Route path='/login' element={<Login />} />
       </Routes>
