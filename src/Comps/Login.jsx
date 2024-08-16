@@ -19,60 +19,61 @@ function Login() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    };
 
-    try {
-        //Skicka formulärdata till backend-server
-            const response = await fetch('https://chatify-api.up.railway.app/auth/users/{userId}', {
+        try {
+            //Skicka formulärdata till backend-server
+            const response = await fetch('https://chatify-api.up.railway.app/auth/token', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(formData),
             });
-        
+
             const data = await response.json();
-    
-            if(response.ok) {
-               
+
+            if (response.ok) {
                 navigate('/chat');
-                } else {
+            } else {
                 setMessage(`Log in failed: ${data.error}`);
             }
-    
-            } catch (error) {
-                setMessage('An error occurred: ' + error.message);  
-            }
-        };
 
-    return ( 
+
+        } catch (error) {
+            setMessage('An error occurred: ' + error.message);
+        }
+    };
+
+
+    return (
         <div>
             <h2>Log in</h2>
             <form onSubmit={handleSubmit}>
                 <div>
-                    <label>Email:</label>
-                    <input 
-                        type='email'
-                        name='email'
-                        value={formData.email}
+                    <label>Username:</label>
+                    <input
+                        type='username'
+                        name='username'
+                        value={formData.username}
                         onChange={handleChange}
-                        required 
+                        required
                     />
                 </div>
                 <div>
                     <label>Password:</label>
-                    <input 
+                    <input
                         type='password'
                         name='password'
                         value={formData.password}
                         onChange={handleChange}
-                        required 
+                        required
                     />
                 </div>
                 <button type='submit'>Log in</button>
             </form>
+            {message && <p>{message}</p>}
         </div>
-     );
+    );
 };
 
 export default Login;
