@@ -34,9 +34,7 @@ function Login() {
             const data = await response.json();
     
             if(response.ok) {
-                //JTW
-                localStorage.setItem('token', data.token);
-                
+               
                 navigate('/chat');
                 } else {
                 setMessage(`Log in failed: ${data.error}`);
