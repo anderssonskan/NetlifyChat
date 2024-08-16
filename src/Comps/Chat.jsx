@@ -1,7 +1,7 @@
 function Chat() {
     return ( 
         <>
-            <h1>hej</h1>
+            
         </>
      );
 }
