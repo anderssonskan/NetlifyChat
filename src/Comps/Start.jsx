@@ -7,14 +7,14 @@ function Start() {
     const logIn = () => {
         navigate('/login');
     };
-    const signIn = () => {
+    const register = () => {
         navigate('/register');
     };
 
     return ( 
         <div>
             <h2>Welcome!</h2>
-            <button onClick={signIn}>Sign in</button>
+            <button onClick={register}>Sign up</button>
             <button onClick={logIn}>Log in</button>
         </div>
      );
