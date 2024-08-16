@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Register() {
     //Tillstånd för att hantera formulärdata
@@ -6,8 +7,11 @@ function Register() {
         username: '',
         email: '',
         password: '',
+        avatar: '',
     });
     const [message, setMessage] = useState('');
+
+    const navigate = useNavigate();
 
     //Hantera förändringar i formulärfälten
     const handleChange = (e) => {
@@ -22,14 +26,16 @@ function Register() {
         e.preventDefault();
 
     //Validering av fomulärdata
-    if (!formData.username || !formData.email || !formData.password) {
+    if (!formData.username || !formData.email || !formData.password || !formData.avatar) {
         setMessage('All fields are mandatory');
         return;
     }
 
+    //TODO CSRF-token
+
     try {
     //Skicka formulärdata till backend-server
-        const response = await fetch('https://chatify-api.up.railway.app/api-docs/#/Auth/post_auth_register', {
+        const response = await fetch('https://chatify-api.up.railway.app/auth/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -41,8 +47,10 @@ function Register() {
 
         if(response.ok) {
             setMessage('Registration successful!');
+            //Navigera till Login
+            navigate('/login');
             } else {
-            setMessage('Registration failed: ${data.message}');
+            setMessage(`Registration failed: ${data.error}`);
         }
 
         } catch (error) {
@@ -80,6 +88,16 @@ function Register() {
                     type="password"
                     name="password"
                     value={formData.password}
+                    onChange={handleChange}
+                    required
+                />
+            </div>
+            <div>
+                <label>Avatar:</label>
+                <input 
+                    type="avatar"
+                    name="avatar"
+                    value={formData.avatar}
                     onChange={handleChange}
                     required
                 />
