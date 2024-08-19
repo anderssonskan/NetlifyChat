@@ -1,9 +1,7 @@
 function Chat() {
-    return ( 
-        <>
-            
-        </>
-     );
+    return (
+        <p>hej</p>
+    );
 }
 
 export default Chat;
