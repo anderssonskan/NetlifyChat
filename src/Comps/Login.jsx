@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 function Login() {
     const [formData, setFormData] = useState({
-        email: '',
+        username: '',
         password: '',
     });
 
@@ -33,6 +33,8 @@ function Login() {
             const data = await response.json();
 
             if (response.ok) {
+                console.log('auth token:', data.token);
+
                 navigate('/chat');
             } else {
                 setMessage(`Log in failed: ${data.error}`);

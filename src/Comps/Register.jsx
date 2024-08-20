@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+
+
 function Register() {
     //Tillstånd för att hantera formulärdata
     const [formData, setFormData] = useState({
@@ -10,8 +12,14 @@ function Register() {
         avatar: '',
     });
     const [message, setMessage] = useState('');
+    const [avatarUrl, setAvatarUrl] = useState('');
 
     const navigate = useNavigate();
+
+    //avatarArray
+    const avatars = Array.from({ length: 10 }, (_,index) =>
+        `https://i.pravatar.cc/150?img=${index + 1}`
+    );
 
     //Hantera förändringar i formulärfälten
     const handleChange = (e) => {
@@ -31,7 +39,29 @@ function Register() {
             return;
         }
 
+        let csrfToken = '';
+
         //TODO CSRF-token
+        try {
+            const response = await fetch('https://chatify-api.up.railway.app/csrf', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            const data = await response.json();
+
+            if (response.ok) {
+                csrfToken = data.csrfToken;
+                console.log('csrfToken is:', data.csrfToken);
+
+            } else {
+                setMessage(`Registration failed: ${data.error}`);
+            }
+
+        } catch (error) {
+            setMessage('An error occurred: ' + error.message);
+        }
 
         try {
             //Skicka formulärdata till backend-server
@@ -40,7 +70,7 @@ function Register() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({ ...formData, csrfToken }),
             });
 
             const data = await response.json();
@@ -93,14 +123,27 @@ function Register() {
                     />
                 </div>
                 <div>
-                    <label>Avatar:</label>
-                    <input
-                        type="avatar"
-                        name="avatar"
-                        value={formData.avatar}
-                        onChange={handleChange}
-                        required
-                    />
+                    <label>Pick an avatar:</label>
+                </div>
+                <div>
+                    {avatars.map((url,index) => (
+                        <img 
+                            key={index} 
+                            src={url} 
+                            alt={`Avatar ${index + 1}`}
+                            style={{
+                                cursor:'poiner', 
+                                margin:'5px',
+                                transition: 'opacity 0.3s ease',
+                                opacity: url === avatarUrl ? '0.5' : '1',
+                                boxShadow: url === avatarUrl ? '0 0 0 3px white' : 'none'
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.opacity = '0.5'}
+                            onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+                            onClick={() => setAvatarUrl(url)} 
+                        />
+                    ))}
+                    {avatarUrl && <h1>{avatarUrl}</h1>}
                 </div>
                 <button type="submit">Sign up</button>
             </form>
