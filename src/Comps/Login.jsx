@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function Login() {
+function Login({ onLogin }) {
     const [formData, setFormData] = useState({
         username: '',
         password: '',
@@ -34,6 +34,16 @@ function Login() {
 
             if (response.ok) {
                 console.log('auth token:', data.token);
+
+                //servern returnerar användardata och token
+                const userData = {
+                    id: data.id,
+                    username: formData.username,
+                    avatar: data.avatar
+                };
+
+                //sparar användares state
+                onLogin(data.token, userData);
 
                 navigate('/chat');
             } else {
