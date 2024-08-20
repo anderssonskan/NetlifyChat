@@ -140,7 +140,13 @@ function Register() {
                             }}
                             onMouseEnter={(e) => e.currentTarget.style.opacity = '0.5'}
                             onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
-                            onClick={() => setAvatarUrl(url)} 
+                            onClick={() => {
+                                setAvatarUrl(url);
+                                setFormData((prevData) => ({
+                                    ...prevData,
+                                    avatar:url,
+                                }));
+                            }} 
                         />
                     ))}
                     {avatarUrl && <h1>{avatarUrl}</h1>}
