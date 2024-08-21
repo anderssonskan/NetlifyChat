@@ -36,16 +36,8 @@ function Login({ onLogin }) {
                 console.log('auth token:', data.token);
 
                 localStorage.setItem('token', data.token);
-
-                //servern returnerar användardata och token
-                const userData = {
-                    id: data.id,
-                    username: formData.username,
-                    avatar: data.avatar
-                };
-
-                //sparar användares state
-                onLogin(data.token, userData);
+                const decodedJwt = JSON.parse(atob(data.token.split('.')[1]));
+                localStorage.setItem('user', JSON.stringify(decodedJwt));
 
                 navigate('/chat');
             } else {
