@@ -35,6 +35,8 @@ function Login({ onLogin }) {
             if (response.ok) {
                 console.log('auth token:', data.token);
 
+                localStorage.setItem('token', data.token);
+
                 //servern returnerar användardata och token
                 const userData = {
                     id: data.id,

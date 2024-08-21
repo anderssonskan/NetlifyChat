@@ -1,5 +1,5 @@
 import '../Style/App.css'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import React from 'react';
 import Chat from './Chat';
@@ -10,14 +10,22 @@ import Start from './Start';
 
 function App() {
   const [user, setUser] = useState(null);
+  useEffect(() => {
+    const storageData = localStorage.getItem('user')
+    const user = JSON.parse(storageData)
+    if (user !== null) {
+      setUser(user);
+    }
+  }, []);
 
   const handleLogin = (token, userData) => {
-    setUser({
+    const user = {
       token,
-      username: userData.username,
-      avatar: userData.avatar,
-      id: userData.id
-    });
+      ...userData,
+    };
+
+    localStorage.setItem('user', JSON.stringify(user))
+    setUser(user);
   }
 
   return (
