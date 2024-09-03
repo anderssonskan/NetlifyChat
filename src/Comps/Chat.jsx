@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+import { ImpulseSpinner } from "react-spinners-kit";
 import '../Style/Chat.css'
+
 
 function Chat() {
     const [messages, setMessages] = useState([]);
@@ -74,7 +76,7 @@ function Chat() {
                 setTimeout(() => {
                     addMessage(responses[getRandomIndex(responses.length)]);
                     setIsResponding(false);
-                }, 2000);
+                }, 3000);
             }
             //rensa inputfält
             setUserInput('');
@@ -100,6 +102,7 @@ function Chat() {
 
                     <div className="chat-area">
                         {chat.map((message, index) => <div key={index} className={message.username == user.user ? 'user-message' : 'fakeChat-message'}>{message.text}</div>)}
+                        <ImpulseSpinner size={30} color='#686769' loading={isResponding} />                 
                     </div>
 
                     <div className="input-area">
