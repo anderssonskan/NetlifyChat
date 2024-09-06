@@ -5,6 +5,7 @@ import Chat from './Chat';
 import Login from './Login';
 import Register from './Register';
 import Start from './Start';
+import SideNav from './SideNav';
 // import PrivateRoute from './AppRoutes';
 
 function App() {

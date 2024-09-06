@@ -1,84 +1,58 @@
-import React, { useState } from "react";
-import { ImpulseSpinner } from "react-spinners-kit";
+import React, { useState, useEffect } from "react";
 import '../Style/Chat.css'
+import SideNav from "./SideNav";
 
+async function authorizedFetch(method, url, body = null) {
+    const jwtToken = localStorage.getItem('token');
+    const config = {
+        method: method,
+        headers: {
+            Authorization: 'Bearer ' + jwtToken,
+            'Content-Type': 'application/json',
+        },
+        body: (body != null) ? JSON.stringify(body) : null,
+    };
+    try {
+        const response = await fetch(url, config)
+        if (!response.ok) {
+            throw Error('Response not OK');
+        }
+        return response.json();
+    } catch (error) {
+        console.error(error);
+    }
+}
 
 function Chat() {
     const [messages, setMessages] = useState([]);
     const [userInput, setUserInput] = useState('');
-    const [isResponding, setIsResponding] = useState(false);
-
     const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')))
+
     if (!user) {
         return <div>Please log in to access the chat.</div>
     };
 
-    //chatten
+    useEffect(() => { getMessages() }, []);
+
     const getMessages = async () => {
-        fetch(import.meta.env.VITE_RAILWAY_URL +
-            '/messages', {
-            method: 'GET',
-            headers: {
-                Authorization: 'Bearer ' + jwtToken,
-                'Content-Type': 'application/json',
-            },
-        })
-            .then(res => {
-                if (!res.ok) {
-                    console.error('Network response was not ok');
-                }
-                return res.json();
-            })
-            .then(data => {
-                getMessages(data);
-            })
-            .catch(error => {
-                console.error('There was a problem with your fetch operation:', error);
-            });
+        const messages = await authorizedFetch('GET', 'https://chatify-api.up.railway.app/messages');
+        setMessages(messages);
     };
 
-    const [chat, setChat] = useState([]);
-
-    const addMessage = (message) => {
-        setChat(prev => [...prev, message]);
+    const addMessage = async (message) => {
+        await authorizedFetch('POST', 'https://chatify-api.up.railway.app/messages', { text: message });
+        getMessages();
     }
 
-    const responses = [{
-        'text': 'Hallå där! Vad gör du?',
-        'avatar': 'https://i.pravatar.cc/100?img=32',
-        'username': 'Ragnar',
-        'conversationId': null
-    },
-    {
-        'text': 'Hallå!!! Svara då!',
-        'avatar': 'https://i.pravatar.cc/100?img=32',
-        'username': 'Ragnar',
-        'conversationId': null
-    },
-    {
-        'text': 'Sover du eller?!',
-        'avatar': 'https://i.pravatar.cc/100?img=32',
-        'username': 'Ragnar',
-        'conversationId': null
-    }
-    ];
-
-    function getRandomIndex(length) {
-        return Math.floor(Math.random() * length);
+    async function removeMessage(msgId) {
+        await authorizedFetch('DELETE', 'https://chatify-api.up.railway.app/messages/' + msgId);
+        getMessages();
     }
 
-    async function handleSend() {
+    async function handleSend(e) {
+        e.preventDefault();
         if (userInput.trim() !== '') {
-            const newMessage = { username: user.user, text: userInput };
-            addMessage(newMessage);
-            if (!isResponding) {
-                setIsResponding(true);
-                setTimeout(() => {
-                    addMessage(responses[getRandomIndex(responses.length)]);
-                    setIsResponding(false);
-                }, 3000);
-            }
-            //rensa inputfält
+            addMessage(userInput);
             setUserInput('');
         }
     }
@@ -86,34 +60,46 @@ function Chat() {
     return (
         <>
             {user && (
-                <div>
-                    <header className="welcome-area">
-                        <h3>Welcome to the Chat, {user.user}!</h3>
-                        <img
-                            src={user.avatar}
-                            alt={`${user.user}'s avatar`}
-                            style={{
-                                width: '50px',
-                                height: '50px',
-                                borderRadius: '50%'
-                            }}
-                        />
-                    </header>
-
-                    <div className="chat-area">
-                        {chat.map((message, index) => <div key={index} className={message.username == user.user ? 'user-message' : 'fakeChat-message'}>{message.text}</div>)}
-                        <ImpulseSpinner size={30} color='#686769' loading={isResponding} />                 
+                <div className="container">
+                    <div className="left">
+                        <header className="welcome-area">
+                            <h3>Welcome to the Chat, {user.user}!</h3>
+                            <img
+                                src={user.avatar}
+                                alt={`${user.user}'s avatar`}
+                                style={{
+                                    width: '50px',
+                                    height: '50px',
+                                    borderRadius: '50%'
+                                }}
+                            />
+                            <div className="sidenav">
+                                <SideNav user={user} />
+                            </div>
+                        </header>
                     </div>
+                    <div className="right">
+                        <div className="chat-area">
+                            <div className="fakeChat-message">Hej! Vad sysslar du med?</div>
+                            {messages.map((message, index) => {
+                                return <div key={index} className={message.userId == user.id ? 'user-message' : 'fakeChat-message'}>
+                                    {message.text}
+                                    {message.userId == user.id && <button onClick={() => removeMessage(message.id)}>Delete</button>}
 
-                    <div className="input-area">
-                        <input
-                            type="text"
-                            value={userInput}
-                            onChange={(e) => setUserInput(e.target.value)}
-                            placeholder='Write your message here'
-                        />
+                                </div>;
+                            })}
+                        </div>
 
-                        <button onClick={handleSend}>Send</button>
+                        <form className="input-area" onSubmit={handleSend}>
+                            <input
+                                type="text"
+                                value={userInput}
+                                onChange={(e) => setUserInput(e.target.value)}
+                                placeholder='Write your message here'
+                            />
+
+                            <button onClick={handleSend}>Send</button>
+                        </form>
                     </div>
                 </div>
             )}
