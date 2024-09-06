@@ -12,7 +12,7 @@ function Start() {
     };
 
     return ( 
-        <div>
+        <div className="start">
             <h2>Welcome!</h2>
             <button onClick={register}>Sign up</button>
             <button onClick={logIn}>Log in</button>

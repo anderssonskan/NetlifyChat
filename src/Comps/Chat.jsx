@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import '../Style/Chat.css'
 import SideNav from "./SideNav";
+import { MdOutlineDeleteOutline } from "react-icons/md";
 
 async function authorizedFetch(method, url, body = null) {
     const jwtToken = localStorage.getItem('token');
@@ -63,16 +64,8 @@ function Chat() {
                 <div className="container">
                     <div className="left">
                         <header className="welcome-area">
-                            <h3>Welcome to the Chat, {user.user}!</h3>
-                            <img
-                                src={user.avatar}
-                                alt={`${user.user}'s avatar`}
-                                style={{
-                                    width: '50px',
-                                    height: '50px',
-                                    borderRadius: '50%'
-                                }}
-                            />
+                            
+                            
                             <div className="sidenav">
                                 <SideNav user={user} />
                             </div>
@@ -82,15 +75,17 @@ function Chat() {
                         <div className="chat-area">
                             <div className="fakeChat-message">Hej! Vad sysslar du med?</div>
                             {messages.map((message, index) => {
-                                return <div key={index} className={message.userId == user.id ? 'user-message' : 'fakeChat-message'}>
-                                    {message.text}
-                                    {message.userId == user.id && <button onClick={() => removeMessage(message.id)}>Delete</button>}
-
-                                </div>;
+                                return (
+                                <div className="chatcontainer">
+                                    <div key={index} className={message.userId == user.id ? 'user-message' : 'fakeChat-message'}>
+                                        {message.text}
+                                    </div>
+                                        {message.userId == user.id && <button onClick={() => removeMessage(message.id)} className="delete"><MdOutlineDeleteOutline /></button> }
+                                </div>)
                             })}
                         </div>
 
-                        <form className="input-area" onSubmit={handleSend}>
+                        <form className="ixnput-area" onSubmit={handleSend}>
                             <input
                                 type="text"
                                 value={userInput}

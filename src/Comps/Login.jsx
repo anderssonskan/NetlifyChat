@@ -52,7 +52,7 @@ function Login() {
 
 
     return (
-        <div>
+        <div className="login">
             <h2>Log in</h2>
             <form onSubmit={handleSubmit}>
                 <div>
